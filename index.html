@@ -1,121 +1,421 @@
-HTML
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>안암골 밥집 룰렛</title>
+    <title>KU 스마트 과제 네비게이터</title>
+    <!-- 폰트 및 아이콘 불러오기 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+        :root {
+            --crimson: #8A1538;
+            --gold: #FFD700;
+            --dark-gray: #333333;
+            --light-gray: #f5f5f7;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Pretendard', sans-serif;
+        }
+
         body {
-            font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
-            background-color: #8A1538; /* 크림슨 컬러 */
-            color: white;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--dark-gray);
+        }
+
+        /* 앱 화면(모바일 사이즈 컨테이너) */
+        .app-container {
+            width: 100%;
+            max-width: 400px;
+            height: 800px;
+            max-height: 100vh;
+            background-color: white;
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
+        }
+
+        /* 헤더 디자인 */
+        .header {
+            background-color: var(--crimson);
+            color: white;
+            padding: 30px 20px 20px;
             text-align: center;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            box-shadow: 0 4px 10px rgba(138, 21, 56, 0.2);
         }
-        .container {
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
         }
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-top: 5px;
         }
-        p {
-            font-size: 1.2rem;
-            margin-bottom: 30px;
-            color: #FFD700; /* 금색 포인트 */
+
+        /* 각 단계별 페이지 (기본적으로 숨김) */
+        .page {
+            display: none;
+            padding: 30px 20px;
+            flex-grow: 1;
+            overflow-y: auto;
+            animation: fadeIn 0.4s ease-out forwards;
         }
-        #result {
-            font-size: 2rem;
+
+        /* 활성화된 페이지 표시 */
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 공통 폼 및 버튼 스타일 */
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--crimson);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background-color: var(--crimson);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
             font-weight: bold;
-            height: 60px;
-            margin: 20px 0;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+            background-color: #72112e;
+            transform: translateY(-2px);
+        }
+
+        .btn-gold {
+            background-color: var(--gold);
+            color: var(--crimson);
+        }
+
+        .btn-gold:hover {
+            background-color: #e6c200;
+        }
+
+        /* 스텝 2: 과제 리스트 스타일 */
+        .greeting {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .task-card {
+            background: var(--light-gray);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 5px solid #ccc;
+        }
+
+        .task-card.urgent { border-left-color: #ff4757; background-color: #ffeaea;}
+        .task-card.medium { border-left-color: #ffa502; }
+        .task-card.low { border-left-color: #2ed573; }
+
+        .task-card h3 { font-size: 16px; margin-bottom: 5px; }
+        .task-card p { font-size: 13px; color: #666; }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 8px;
+        }
+        .badge.urgent { background-color: #ff4757; }
+
+        /* 스텝 3: AI 솔루션 스타일 */
+        .ai-box {
+            background: linear-gradient(to right bottom, var(--crimson), #5c0e25);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .ai-box h2 {
+            font-size: 18px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            background-color: white;
-            color: #8A1538;
+            gap: 10px;
+        }
+
+        .countdown {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--gold);
+            text-align: center;
+            margin: 15px 0;
+            letter-spacing: 2px;
+        }
+
+        .solution-text {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
             border-radius: 10px;
-            padding: 10px 20px;
-            transition: all 0.3s ease;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
         }
-        button {
-            background-color: #FFD700;
-            color: #8A1538;
-            border: none;
-            padding: 15px 30px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
-            transition: transform 0.2s;
+
+        .link-list {
+            list-style: none;
         }
-        button:hover {
-            transform: scale(1.05);
+
+        .link-list li {
+            margin-bottom: 10px;
         }
-        button:active {
-            transform: scale(0.95);
+
+        .link-list a {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background-color: var(--light-gray);
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--dark-gray);
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .link-list a:hover {
+            background-color: #e2e2e2;
+        }
+
+        .link-list a i {
+            margin-right: 15px;
+            font-size: 20px;
+            color: var(--crimson);
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>🐯 안암골 밥집 룰렛 🐯</h1>
-        <p>새내기, 오늘 동기들이랑 뭐 먹을래?</p>
-        
-        <div id="result">버튼을 눌러주세요!</div>
-        
-        <button onclick="startRoulette()">밥집 뽑기 🎯</button>
+    <div class="app-container">
+        <!-- 상단 헤더 -->
+        <div class="header">
+            <h1><i class="fa-solid fa-graduation-cap"></i> KUDOS</h1>
+            <p>고려대학교 스마트 과제 네비게이터</p>
+        </div>
+
+        <!-- 1단계: 로그인 / 학번 입력 -->
+        <div id="step1" class="page active">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <i class="fa-solid fa-user-astronaut" style="font-size: 50px; color: var(--crimson);"></i>
+                <h2 style="margin-top: 15px;">포털 연동 로그인</h2>
+                <p style="color: #666; font-size: 14px; margin-top: 5px;">블랙보드의 과제를 자동으로 불러옵니다.</p>
+            </div>
+            
+            <div class="input-group">
+                <label for="studentId">학번 (Student ID)</label>
+                <input type="text" id="studentId" placeholder="예: 2024120000" maxlength="10">
+            </div>
+            
+            <div class="input-group">
+                <label for="studentName">이름 (Name)</label>
+                <input type="text" id="studentName" placeholder="이름을 입력하세요">
+            </div>
+
+            <button class="btn-primary" onclick="goToStep2()">
+                <i class="fa-solid fa-sync"></i> 과제 동기화 시작
+            </button>
+        </div>
+
+        <!-- 2단계: 과제 목록 및 대시보드 -->
+        <div id="step2" class="page">
+            <h2 class="greeting">환영합니다, <span id="displayName" style="color: var(--crimson);"></span>님! 👋</h2>
+            <p style="margin-bottom: 20px; color: #666;">현재 처리해야 할 과제가 <strong style="color: var(--crimson);">3건</strong> 있습니다.</p>
+
+            <div class="task-card urgent">
+                <span class="badge urgent">오늘 자정 마감</span>
+                <h3>SW 프로그래밍의 기초</h3>
+                <p>기말고사 대체 프로젝트 (바이브코딩) 및 GitHub Pages 배포</p>
+            </div>
+
+            <div class="task-card medium">
+                <h3>학술적 글쓰기</h3>
+                <p>기말 에세이 초안 작성 (내일 18:00 마감)</p>
+            </div>
+
+            <div class="task-card low">
+                <h3>일반생물학 및 실험</h3>
+                <p>3주차 실험 결과 보고서 (금요일 23:59 마감)</p>
+            </div>
+
+            <button class="btn-primary btn-gold" onclick="goToStep3()" style="margin-top: 20px;">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> AI 우선순위 분석 및 솔루션 받기
+            </button>
+        </div>
+
+        <!-- 3단계: AI 분석 및 리소스 제공 -->
+        <div id="step3" class="page">
+            <div class="ai-box">
+                <h2><i class="fa-solid fa-robot"></i> AI 분석 결과 및 솔루션</h2>
+                <p style="font-size: 13px; opacity: 0.9;">가장 시급한 과제를 분석했습니다.</p>
+                
+                <div class="countdown" id="timer">00:00:00</div>
+                
+                <div class="solution-text">
+                    <strong>⚠️ 경고: [SW 프로그래밍의 기초]</strong> 과제 마감이 오늘 자정(23:59)입니다.<br><br>
+                    <strong>💡 AI 추천 행동:</strong><br>
+                    현재 남은 시간이 촉박합니다! 복잡한 코드를 직접 짜기보다는 생성형 AI(ChatGPT 등)를 활용한 '바이브코딩'으로 단일 HTML 파일을 만들고, 신속하게 GitHub Pages에 호스팅하여 링크를 제출하세요.
+                </div>
+            </div>
+
+            <h3 style="font-size: 16px; margin-bottom: 15px;">🚀 추천 도움말 및 도구</h3>
+            <ul class="link-list">
+                <li>
+                    <a href="https://chatgpt.com/" target="_blank">
+                        <i class="fa-solid fa-brain"></i>
+                        <div>
+                            <span style="display: block; font-size: 15px;">ChatGPT (바이브코딩)</span>
+                            <span style="font-size: 12px; color: #888; font-weight: normal;">코드 생성 및 디버깅 도움 받기</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://pages.github.com/" target="_blank">
+                        <i class="fa-brands fa-github"></i>
+                        <div>
+                            <span style="display: block; font-size: 15px;">GitHub Pages 공식 가이드</span>
+                            <span style="font-size: 12px; color: #888; font-weight: normal;">무료 웹 호스팅 설정 방법</span>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+
+            <button class="btn-primary" onclick="goToStep1()" style="background-color: #555; margin-top: 20px;">
+                <i class="fa-solid fa-arrow-rotate-left"></i> 처음으로 돌아가기
+            </button>
+        </div>
+
     </div>
 
+    <!-- 페이지 전환 및 타이머 자바스크립트 로직 -->
     <script>
-        const restaurants = [
-            "고른햇살 (참치김밥 필수)", 
-            "영철버거", 
-            "무르무르 드 구스토", 
-            "야마토텐동", 
-            "삼성통닭 (마늘치킨)", 
-            "애기능 학생식당", 
-            "특별한 밥상 (특밥)", 
-            "용초수", 
-            "칠기마라탕", 
-            "미각 (짬뽕)"
-        ];
+        // 페이지 전환 함수
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+        }
 
-        function startRoulette() {
-            const resultDiv = document.getElementById('result');
-            const button = document.querySelector('button');
+        // 스텝 1 -> 스텝 2
+        function goToStep2() {
+            const nameInput = document.getElementById('studentName').value;
+            const idInput = document.getElementById('studentId').value;
+
+            if(!idInput || !nameInput) {
+                alert("학번과 이름을 모두 입력해주세요!");
+                return;
+            }
+
+            // 입력받은 이름으로 스텝2 텍스트 변경
+            document.getElementById('displayName').innerText = nameInput;
+            showPage('step2');
+        }
+
+        // 스텝 2 -> 스텝 3
+        function goToStep3() {
+            startTimer(); // 타이머 시작
+            showPage('step3');
+        }
+
+        // 스텝 3 -> 스텝 1 (초기화)
+        function goToStep1() {
+            document.getElementById('studentId').value = '';
+            document.getElementById('studentName').value = '';
+            showPage('step1');
+        }
+
+        // 오늘 자정(23:59:59)까지의 카운트다운 타이머 함수
+        function startTimer() {
+            const timerElement = document.getElementById('timer');
             
-            button.disabled = true;
-            let count = 0;
-            
-            // 룰렛 돌아가는 효과
-            const interval = setInterval(() => {
-                const randomIndex = Math.floor(Math.random() * restaurants.length);
-                resultDiv.innerText = restaurants[randomIndex];
-                count++;
+            // 타이머 업데이트 함수
+            const updateTimer = () => {
+                const now = new Date();
+                // 오늘 밤 23시 59분 59초 객체 생성
+                const deadline = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
                 
-                if (count > 20) {
-                    clearInterval(interval);
-                    // 최종 결과
-                    const finalIndex = Math.floor(Math.random() * restaurants.length);
-                    resultDiv.innerText = "✨ " + restaurants[finalIndex] + " ✨";
-                    button.disabled = false;
+                const diff = deadline - now;
+
+                if (diff <= 0) {
+                    timerElement.innerText = "마감 종료!";
+                    return;
                 }
-            }, 50); // 0.05초마다 글자 바뀜
+
+                // 남은 시간 계산
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                // 00:00:00 포맷 맞추기
+                const hFormat = String(hours).padStart(2, '0');
+                const mFormat = String(minutes).padStart(2, '0');
+                const sFormat = String(seconds).padStart(2, '0');
+
+                timerElement.innerText = `${hFormat}:${mFormat}:${sFormat}`;
+            };
+
+            updateTimer(); // 즉시 1회 실행
+            setInterval(updateTimer, 1000); // 1초마다 실행
         }
     </script>
-
 </body>
 </html>
