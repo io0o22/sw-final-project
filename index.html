@@ -1,0 +1,121 @@
+HTML
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>안암골 밥집 룰렛</title>
+    <style>
+        body {
+            font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
+            background-color: #8A1538; /* 크림슨 컬러 */
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #FFD700; /* 금색 포인트 */
+        }
+        #result {
+            font-size: 2rem;
+            font-weight: bold;
+            height: 60px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: white;
+            color: #8A1538;
+            border-radius: 10px;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+        }
+        button {
+            background-color: #FFD700;
+            color: #8A1538;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🐯 안암골 밥집 룰렛 🐯</h1>
+        <p>새내기, 오늘 동기들이랑 뭐 먹을래?</p>
+        
+        <div id="result">버튼을 눌러주세요!</div>
+        
+        <button onclick="startRoulette()">밥집 뽑기 🎯</button>
+    </div>
+
+    <script>
+        const restaurants = [
+            "고른햇살 (참치김밥 필수)", 
+            "영철버거", 
+            "무르무르 드 구스토", 
+            "야마토텐동", 
+            "삼성통닭 (마늘치킨)", 
+            "애기능 학생식당", 
+            "특별한 밥상 (특밥)", 
+            "용초수", 
+            "칠기마라탕", 
+            "미각 (짬뽕)"
+        ];
+
+        function startRoulette() {
+            const resultDiv = document.getElementById('result');
+            const button = document.querySelector('button');
+            
+            button.disabled = true;
+            let count = 0;
+            
+            // 룰렛 돌아가는 효과
+            const interval = setInterval(() => {
+                const randomIndex = Math.floor(Math.random() * restaurants.length);
+                resultDiv.innerText = restaurants[randomIndex];
+                count++;
+                
+                if (count > 20) {
+                    clearInterval(interval);
+                    // 최종 결과
+                    const finalIndex = Math.floor(Math.random() * restaurants.length);
+                    resultDiv.innerText = "✨ " + restaurants[finalIndex] + " ✨";
+                    button.disabled = false;
+                }
+            }, 50); // 0.05초마다 글자 바뀜
+        }
+    </script>
+
+</body>
+</html>
